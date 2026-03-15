@@ -22945,8 +22945,11 @@ function getForm(){
   if(usaNomesUC){
     const rows=document.querySelectorAll('.uc-row');
     rows.forEach(r=>{
-      const nome=r.querySelector('.uc-nome').value.trim();
-      const ch=r.querySelector('.uc-ch').value.trim();
+      const nomeEl=r.querySelector('.uc-nome');
+      const chEl=r.querySelector('.uc-ch');
+      if(!nomeEl||!chEl) return;
+      const nome=nomeEl.value.trim();
+      const ch=chEl.value.trim();
       const chNum=parseInt((ch||'0').replace(/[^0-9]/g,''))||0;
       if(nome) nomesUC.push({nome,ch:ch||'?'});
       chUCsDefinidas+=chNum;
@@ -23080,7 +23083,9 @@ async function gerar(){
     log('⚙️ Preparando biblioteca DOCX...');
     await waitDocx();
     log('✅ Biblioteca pronta');
-    const form=getForm();
+    let form;
+    try{ form=getForm(); }
+    catch(e){ throw new Error('Erro ao ler formulário: '+e.message); }
     log('⚙️ Conectando ao servidor...');
     async function callAPI(attempt=1){
       log('⚙️ Gerando conteúdo (tentativa '+attempt+'/3)...');
